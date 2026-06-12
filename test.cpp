@@ -1,5 +1,6 @@
 #include <iostream>
 #include <string>
+#include <iomanip>
 using namespace std;
 
 // Register
@@ -82,6 +83,58 @@ class CPU {
             registers[6].setName("R6");
             registers[7].setName("R7");
             
+        }
+
+        // GEt register
+        GeneralRegister& getRegister(int index) {
+            if(index < 0 || index >= 8) {
+                throw out_of_range("Invalid Register Index");
+            }
+
+            return registers[index];
+        }
+
+        // Reegister Name Lookup (Runner Needed)
+        int getRegisterIndex(string reg) {
+            if(reg == "R0") return 0;
+            if(reg == "R1") return 1;
+            if(reg == "R2") return 2;
+            if(reg == "R3") return 3;
+            if(reg == "R4") return 4;
+            if(reg == "R5") return 5;
+            if(reg == "R6") return 6;
+            if(reg == "R7") return 7;
+
+            return -1; // Change it to exception later
+        }
+
+        // Get PC
+        ProgramCounter& getPC() {
+            return pc;
+        }
+        
+        // PC increment after execution
+        void incrementPC() {
+            pc.increment();
+        }
+
+        // Display format
+        void printState() {
+            cout << "#Begin#" << endl;
+            cout << "#Registers#" << endl;
+
+            for(int i = 0; i < 8; i++) {
+                cout << setw(4) << setfill('0') << (int)registers[i].getValue() << "#";
+            }
+            cout << endl;
+            
+            // Flags
+
+            cout << "#PC#" << setw(4) << setfill('0') << (int)pc.getPC() << "#" << endl;
+
+            // Memory
+
+            cout << "End" << endl;
         }
 };
 
