@@ -141,7 +141,15 @@ class CPU {
 // Test
 int main() {
     CPU cpu;
-
+    
+    // Set R0 = 10
+    cpu.getRegister(0).setValue(10);
+        
+    // Execute an instruction
+    cpu.incrementPC();
+        
+    // Display state(for assignment request. final output)
+    cpu.dumpState();
 
     return 0;
 }
