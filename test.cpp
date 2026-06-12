@@ -1,6 +1,7 @@
 #include <iostream>
 #include <string>
 #include <iomanip>
+#include <stdexcept>
 using namespace std;
 
 // Register
@@ -142,14 +143,23 @@ class CPU {
 int main() {
     CPU cpu;
     
-    // Set R0 = 10
-    cpu.getRegister(0).setValue(10);
+    try {
+        // Set R0 = 10
+        cpu.getRegister(0).setValue(10);
         
-    // Execute an instruction
-    cpu.incrementPC();
+        // Execute an instruction
+        cpu.incrementPC();
         
-    // Display state(for assignment request. final output)
-    cpu.dumpState();
+        // Display state(for assignment request. final output)
+        cpu.dumpState();
+
+        // Test if out of range exception work
+        cpu.getRegister(100);
+    
+    }
+    catch (const exception& e) {
+        cout << e.what() << endl;
+    }
 
     return 0;
 }
