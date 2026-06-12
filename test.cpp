@@ -66,6 +66,22 @@ class ProgramCounter {
         }
 };
 
+// SI Register
+class StackIndex {
+    private:
+
+    public:
+
+}
+
+// System Stack
+class SystemStack {
+    private:
+
+    public:
+
+}
+
 // CPU
 class CPU {
     private:
