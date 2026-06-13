@@ -69,9 +69,28 @@ class ProgramCounter {
 // SI Register
 class StackIndex {
     private:
+        unsigned char si; // Range 0-255
 
     public:
+        StackIndex() {
+            si = 0;
+        }
 
+        unsigned char getSI() const {
+            return si;
+        }
+
+        void increment() {
+            si++;
+        }
+
+        void decrement() {
+            si--; // Add underflow check later
+        }
+
+        void reset() {
+            si = 0;
+        }
 }
 
 // System Stack
@@ -122,7 +141,7 @@ class CPU {
             if(reg == "R6") return 6;
             if(reg == "R7") return 7;
 
-            return -1; // Change it to exception later
+            return -1; // Change it to exception later?
         }
 
         // Get PC
