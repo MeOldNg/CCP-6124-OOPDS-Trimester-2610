@@ -96,9 +96,27 @@ class StackIndex {
 // System Stack
 class SystemStack {
     private:
+        signed char data[8]; // 8 bytes stack
 
     public:
+        SystemStack() {
+            for(int i = 0; i < 8; i++) {
+                data[i] = 0; // Initialize stack to 0
+            }
 
+            void write(int index, signed char value) {
+                if(index < 0 || index >= 8) {
+                    // addexception later
+                }
+            }
+
+            signed char read(int index) const {
+                if(index < 0 || index >= 8) {
+                    // addexception later
+                }
+                return data[index];
+            }
+        }
 }
 
 // CPU
