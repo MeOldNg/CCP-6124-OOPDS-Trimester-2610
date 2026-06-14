@@ -85,13 +85,17 @@ class StackIndex {
         }
 
         void decrement() {
-            si--; // Add underflow check later
+            if(si == 0) {
+                throw underflow_error("Stack Underflow");
+            }
+
+            si--;
         }
 
         void reset() {
             si = 0;
         }
-}
+};
 
 // System Stack
 class SystemStack {
@@ -103,27 +107,33 @@ class SystemStack {
             for(int i = 0; i < 8; i++) {
                 data[i] = 0; // Initialize stack to 0
             }
-
-            void write(int index, signed char value) {
-                if(index < 0 || index >= 8) {
-                    // addexception later
-                }
-            }
-
-            signed char read(int index) const {
-                if(index < 0 || index >= 8) {
-                    // addexception later
-                }
-                return data[index];
-            }
         }
-}
+
+        // Write value to stack at index (0-7)
+        void write(int index, signed char value) {
+            if(index < 0 || index >= 8) {
+                throw overflow_error("Stack Memory Overflow");
+            }
+            data[index] = value;
+        }
+
+        // Read value from stack at index (0-7)
+        signed char read(int index) const {
+            if(index < 0 || index >= 8) {
+                throw out_of_range("Invalid Stack Access");
+            }
+
+            return data[index];
+        }
+};
 
 // CPU
 class CPU {
     private:
         GeneralRegister registers[8]; // R0-R7
         ProgramCounter pc;
+        StackIndex si;
+        SystemStack stack;
 
     public:
         CPU() {
@@ -167,6 +177,28 @@ class CPU {
             return pc;
         }
         
+        // Gey SI
+        StackIndex& getSi() {
+            return si;
+        }
+
+        // Stack operation: push
+        void pushStack(signed char value) {
+            if(si.getSI() >= 8) {
+                throw overflow_error("Stack Overflow");
+            }
+
+            stack.write(si.getSI(), value); // Write value to stack
+            si.increment(); // Move SI to nest position
+        }
+
+        // Stack operation: pop
+        signed char popStack() {
+            si.decrement(); // Move SI to previous position(auto underflow check)
+            int newIndex = si.getSI();
+            return stack.read(newIndex); // Take out value from stack
+        }
+
         // PC increment after execution
         void incrementPC() {
             pc.increment();
@@ -204,11 +236,20 @@ int main() {
         cpu.incrementPC();
         
         // Display state(for assignment request. final output)
-        cpu.dumpState();
+        cpu.printState();
 
         // Test if out of range exception work
         cpu.getRegister(100);
     
+    }
+    catch (const exception& e) {
+        cout << e.what() << endl;
+    }
+
+    try {
+        for(int i = 0; i <= 9; i++) {
+            cpu.pushStack(i * 10); // Shoold throw error when i = 8
+        }
     }
     catch (const exception& e) {
         cout << e.what() << endl;
