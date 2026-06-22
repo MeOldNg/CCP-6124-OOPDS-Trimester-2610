@@ -207,18 +207,20 @@ class CPU {
         // Display format
         void printState() {
             cout << "#Begin#" << endl;
-            cout << "#Registers#" << endl;
+            cout << "#Registers#";
 
             for(int i = 0; i < 8; i++) {
                 cout << setw(4) << setfill('0') << (int)registers[i].getValue() << "#";
             }
             cout << endl;
             
-            // Flags
+            // Flags (initialize all flags to 0 first)
+            cout << "#Flags#OF#0#UF#0#CF#0#ZF#0#" << endl;
 
             cout << "#PC#" << setw(4) << setfill('0') << (int)pc.getPC() << "#" << endl;
 
-            // Memory
+            // Memory (will add loop later)
+            cout << "#Memory#" << endl;
 
             cout << "End" << endl;
         }
