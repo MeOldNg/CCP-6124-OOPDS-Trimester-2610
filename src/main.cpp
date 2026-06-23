@@ -22,9 +22,63 @@ class Runner{
             file.close();
         }
 
-        void arithmetics() {
+        void MOV() {
+
+        }
+
+        void INC() {
             
         }
+
+        void DEC() {
+            
+        }
+
+        void ROL() {
+
+        }
+
+        void ROR() {
+
+        }
+
+        void SHL() {
+
+        }
+
+        void SHR() {
+
+        }
+
+
+};
+
+class arithmeticInstructions : public Runner {
+    private:
+    public:
+        void ADD() {
+
+        }
+        
+        void SUB() {
+
+        }
+
+        void MUL() {
+
+        }
+
+        void DIV() {
+
+        }
+};
+
+class IOInstructions : public Runner {
+
+};
+
+class shiftInstructions : public Runner {
+
 };
 
 int main() {
