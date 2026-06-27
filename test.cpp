@@ -97,6 +97,35 @@ class StackIndex {
         }
 };
 
+// Flags
+class Flags {
+    private:
+        bool of; // Overflow Flag
+        bool uf; // Underflow Flag
+        bool cf; // Carry Flag
+        bool zf; // Zero Flag
+
+    public:
+        Flags() : of(false), uf(false), cf(false), zf(false) {}
+
+        // Setters
+        void setOF(bool val) { of = val; }
+        void setUF(bool val) { uf = val; }
+        void setCF(bool val) { cf = val; }
+        void setZF(bool val) { zf = val; }
+
+        // Getters
+        bool getOF() const { return of; }
+        bool getUF() const { return uf; }
+        bool getCF() const { return cf; }
+        bool getZF() const { return zf; }
+
+        // Reset all of the flags
+        void reset() {
+            of = uf = cf = zf = false;
+        }
+};
+
 // System Stack
 class SystemStack {
     private:
