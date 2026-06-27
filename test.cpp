@@ -193,6 +193,7 @@ class CPU {
         StackIndex si;
         SystemStack stack;
         Flags flags;
+        MainMemory memory;
 
     public:
         CPU() {
@@ -242,8 +243,13 @@ class CPU {
         }
 
         // Get Flags
-        Flags& flags() {
+        Flags& getFlags() {
             return flags;
+        }
+
+        // Get Memory
+        MainMemory& getMemory() {
+            return memory;
         }
 
         // Stack operation: push
@@ -287,10 +293,19 @@ class CPU {
             // PC
             cout << "#PC#" << setw(4) << setfill('0') << (int)pc.getPC() << "#" << endl;
 
-            // Memory (will add loop later)
+            // Memory
             cout << "#Memory#" << endl;
+            for(int i=0; i < 64; i++) {
+                if(i % 8 == 0) {
+                    cout << "#"; // Add # at the new line first
+                }
+                cout << setw(4) << setfill('0') << (int)memory.read(i) << "#";
+                if(i % 8 == 7) {
+                    cout << endl; // Change to the next line when already have 8 memory
+                }
+            }
 
-            cout << "End" << endl;
+            cout << "#End#" << endl;
         }
 };
 
