@@ -163,6 +163,7 @@ class CPU {
         ProgramCounter pc;
         StackIndex si;
         SystemStack stack;
+        Flags flags;
 
     public:
         CPU() {
@@ -206,9 +207,14 @@ class CPU {
             return pc;
         }
         
-        // Gey SI
+        // Get SI
         StackIndex& getSi() {
             return si;
+        }
+
+        // Get Flags
+        Flags& flags() {
+            return flags;
         }
 
         // Stack operation: push
@@ -243,9 +249,13 @@ class CPU {
             }
             cout << endl;
             
-            // Flags (initialize all flags to 0 first)
-            cout << "#Flags#OF#0#UF#0#CF#0#ZF#0#" << endl;
+            // Flags
+            cout << "#Flags#OF#" << flags.getOF() 
+                 << "#UF#" << flags.getUF() 
+                 << "#CF#" << flags.getCF() 
+                 << "#ZF#" << flags.getZF() << "#" << endl;
 
+            // PC
             cout << "#PC#" << setw(4) << setfill('0') << (int)pc.getPC() << "#" << endl;
 
             // Memory (will add loop later)
