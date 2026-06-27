@@ -156,6 +156,35 @@ class SystemStack {
         }
 };
 
+// Main Memory
+class MainMemory {
+    private:
+        signed char data[64]; // 64 bytes array
+
+    public:
+        MainMemory() {
+            for(int i = 0; i < 64; i++) {
+                data[i] = 0; // Initialize to 0
+            }
+        }
+
+        // Write operation to main memory
+        void write(int address, signed char value) {
+            if(address < 0 || address >= 64) {
+                throw out_of_range("Memory Write Out of Range (0-63 only)");
+            }
+            data[address] = value;
+        }
+
+        // Read operation from main memory
+        signed char read(int address) const {
+            if(address < 0 || address >= 64) {
+                throw out_of_range("Memory Read Out of Range (0-63 only)");
+            }
+            return data[address];
+        }
+};
+
 // CPU
 class CPU {
     private:
