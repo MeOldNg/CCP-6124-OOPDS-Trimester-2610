@@ -97,6 +97,35 @@ class StackIndex {
         }
 };
 
+// Flags
+class Flags {
+    private:
+        bool of; // Overflow Flag
+        bool uf; // Underflow Flag
+        bool cf; // Carry Flag
+        bool zf; // Zero Flag
+
+    public:
+        Flags() : of(false), uf(false), cf(false), zf(false) {}
+
+        // Setters
+        void setOF(bool val) { of = val; }
+        void setUF(bool val) { uf = val; }
+        void setCF(bool val) { cf = val; }
+        void setZF(bool val) { zf = val; }
+
+        // Getters
+        bool getOF() const { return of; }
+        bool getUF() const { return uf; }
+        bool getCF() const { return cf; }
+        bool getZF() const { return zf; }
+
+        // Reset all of the flags
+        void reset() {
+            of = uf = cf = zf = false;
+        }
+};
+
 // System Stack
 class SystemStack {
     private:
@@ -127,6 +156,35 @@ class SystemStack {
         }
 };
 
+// Main Memory
+class MainMemory {
+    private:
+        signed char data[64]; // 64 bytes array
+
+    public:
+        MainMemory() {
+            for(int i = 0; i < 64; i++) {
+                data[i] = 0; // Initialize to 0
+            }
+        }
+
+        // Write operation to main memory
+        void write(int address, signed char value) {
+            if(address < 0 || address >= 64) {
+                throw out_of_range("Memory Write Out of Range (0-63 only)");
+            }
+            data[address] = value;
+        }
+
+        // Read operation from main memory
+        signed char read(int address) const {
+            if(address < 0 || address >= 64) {
+                throw out_of_range("Memory Read Out of Range (0-63 only)");
+            }
+            return data[address];
+        }
+};
+
 // CPU
 class CPU {
     private:
@@ -134,6 +192,8 @@ class CPU {
         ProgramCounter pc;
         StackIndex si;
         SystemStack stack;
+        Flags flags;
+        MainMemory memory;
 
     public:
         CPU() {
@@ -177,9 +237,19 @@ class CPU {
             return pc;
         }
         
-        // Gey SI
+        // Get SI
         StackIndex& getSi() {
             return si;
+        }
+
+        // Get Flags
+        Flags& getFlags() {
+            return flags;
+        }
+
+        // Get Memory
+        MainMemory& getMemory() {
+            return memory;
         }
 
         // Stack operation: push
@@ -214,15 +284,28 @@ class CPU {
             }
             cout << endl;
             
-            // Flags (initialize all flags to 0 first)
-            cout << "#Flags#OF#0#UF#0#CF#0#ZF#0#" << endl;
+            // Flags
+            cout << "#Flags#OF#" << flags.getOF() 
+                 << "#UF#" << flags.getUF() 
+                 << "#CF#" << flags.getCF() 
+                 << "#ZF#" << flags.getZF() << "#" << endl;
 
+            // PC
             cout << "#PC#" << setw(4) << setfill('0') << (int)pc.getPC() << "#" << endl;
 
-            // Memory (will add loop later)
+            // Memory
             cout << "#Memory#" << endl;
+            for(int i=0; i < 64; i++) {
+                if(i % 8 == 0) {
+                    cout << "#"; // Add # at the new line first
+                }
+                cout << setw(4) << setfill('0') << (int)memory.read(i) << "#";
+                if(i % 8 == 7) {
+                    cout << endl; // Change to the next line when already have 8 memory
+                }
+            }
 
-            cout << "End" << endl;
+            cout << "#End#" << endl;
         }
 };
 
