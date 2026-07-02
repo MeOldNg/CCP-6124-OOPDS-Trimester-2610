@@ -353,7 +353,7 @@ class CPU {
         GeneralRegister registers[8]; // R0-R7
         ProgramCounter pc;
         StackIndex si;
-        SystemStack stack;
+        MyStack stack;
         Flags flags;
         MainMemory memory;
 
@@ -479,19 +479,21 @@ class CPU {
 
         // Stack operation: push
         void pushStack(signed char value) {
-            if(si.getSI() >= 8) {
-                throw overflow_error("Stack Overflow");
+            bool ok = stack.push(value);
+            if (!ok) {
+            throw overflow_error("Stack Overflow");
             }
-
-            stack.write(si.getSI(), value); // Write value to stack
-            si.increment(); // Move SI to nest position
+            getSi().increment();
         }
 
-        // Stack operation: pop
         signed char popStack() {
-            si.decrement(); // Move SI to previous position(auto underflow check)
-            int newIndex = si.getSI();
-            return stack.read(newIndex); // Take out value from stack
+            signed char val;
+            bool ok = stack.pop(val);
+            if (!ok) {
+                throw underflow_error("Stack Underflow");
+            }
+            getSi().decrement();
+            return val;
         }
 
         // PC increment after execution
@@ -565,6 +567,10 @@ class Instructions {
         virtual void execute(CPU &cpu) = 0;
 
         string getOpcode() {
+            return opp;
+        }
+
+        string getOpp() {
             return opp;
         }
 };
@@ -1342,10 +1348,53 @@ class Runner {
             while ((int)cpu.getPC().getPC() < program.getSize()) {
                 int currentPC = (int)cpu.getPC().getPC();
 
-                // this calls the right execute() through polymorphism
+                // show which instruction is about to run
+                cout << "\n--- Step " << currentPC + 1 << " ---" << endl;
+                cout << "Executing: " << program[currentPC]->getOpp() << endl;
+
+                // run the instruction
                 program[currentPC]->execute(cpu);
 
                 cpu.incrementPC();
+
+                // show the VM state after this instruction
+                cpu.printState(cout);
+
+                // pause and wait for user to press enter before next instruction
+                cout << "\nPress Enter to continue..." << endl;
+                cin.ignore();
+            }
+
+            cout << "End of program" << endl;
+        }
+
+        void runStepByStep() {
+            if (program.isEmpty()) {
+                cout << "No program loaded." << endl;
+                return;
+            }
+
+            cpu.getPC().reset();
+            cout << "Start program (step by step mode)" << endl;
+
+            while ((int)cpu.getPC().getPC() < program.getSize()) {
+                int currentPC = (int)cpu.getPC().getPC();
+
+                // show which instruction is about to run
+                cout << "\n--- Step " << currentPC + 1 << " ---" << endl;
+                cout << "Executing: " << program[currentPC]->getOpp() << endl;
+
+                // run the instruction
+                program[currentPC]->execute(cpu);
+
+                cpu.incrementPC();
+
+                // show the full VM state after this instruction
+                cpu.printState(cout);
+
+                // wait for user to press enter
+                cout << "\nPress Enter for next instruction..." << endl;
+                cin.ignore();
             }
 
             cout << "End of program" << endl;
@@ -1358,7 +1407,7 @@ class Runner {
 };
 
 // Test
-int main() {
+int main(int argc, char* argv[]) {
     CPU cpu;
     
     try {
@@ -1369,7 +1418,7 @@ int main() {
         cpu.incrementPC();
         
         // Display state(for assignment request. final output)
-        cpu.printState();
+        cpu.printState(cout);
 
         // Test if out of range exception work
         cpu.getRegister(100);
@@ -1386,6 +1435,42 @@ int main() {
     }
     catch (const exception& e) {
         cout << e.what() << endl;
+    }
+
+    cout << "\n=====================================" << endl;
+    cout << "Running assembly program via Runner" << endl;
+    cout << "=====================================" << endl;
+
+    Runner runner;
+
+    if (argc >= 2) {
+    string inputFile  = argv[1];
+    string outputFile = "output.txt";
+        if (argc >= 3) {
+        outputFile = argv[2];
+        }
+
+        bool loaded = runner.loadFile(inputFile);
+        if (loaded) {
+            // ask the user which mode they want
+            cout << "Run mode: (1) Normal  (2) Step by step" << endl;
+            cout << "Enter choice: ";
+            int choice;
+            cin >> choice;
+            cin.ignore(); // clear the newline left by cin
+
+            if (choice == 2) {
+                runner.runStepByStep();
+            } else {
+                runner.run();
+            }
+
+            runner.dumpResults(outputFile);
+            cout << "Output saved to " << outputFile << endl;
+        }
+    } else {
+        cout << "No .asm file provided." << endl;
+        cout << "Usage: ./program <filename.asm> [output.txt]" << endl;
     }
 
     return 0;
